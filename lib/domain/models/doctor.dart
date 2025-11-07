@@ -1,7 +1,3 @@
-// ============================================
-// DOMAIN LAYER - lib/domain/models/doctor.dart
-// ============================================
-
 import 'staff.dart';
 
 class Doctor extends Staff {
@@ -9,6 +5,9 @@ class Doctor extends Staff {
   String licenseNumber;
   int yearsOfExperience;
   List<String> certifications;
+  bool isAvailable;
+  int maxPatients;
+  int currentPatients;
 
   Doctor({
     required String id,
@@ -22,6 +21,11 @@ class Doctor extends Staff {
     List<String>? certifications,
     bool isActive = true,
     List<String>? assignedShifts,
+    double baseSalary = 0.0,
+    double bonus = 0.0,
+    this.isAvailable = true,
+    this.maxPatients = 20,
+    this.currentPatients = 0,
   }) : certifications = certifications ?? [],
        super(
          id: id,
@@ -31,6 +35,8 @@ class Doctor extends Staff {
          hireDate: hireDate,
          isActive: isActive,
          assignedShifts: assignedShifts,
+         baseSalary: baseSalary,
+         bonus: bonus,
        );
 
   @override
@@ -40,6 +46,37 @@ class Doctor extends Staff {
     if (!certifications.contains(cert)) {
       certifications.add(cert);
     }
+  }
+
+  /// Check if doctor is available for appointments
+  bool isAvailableForAppointments() {
+    return isAvailable && isActive;
+  }
+
+  /// Check if doctor can accept new patients
+  bool canAcceptNewPatient() {
+    return isAvailableForAppointments() && currentPatients < maxPatients;
+  }
+
+  /// Add a new patient
+  bool addPatient() {
+    if (canAcceptNewPatient()) {
+      currentPatients++;
+      return true;
+    }
+    return false;
+  }
+
+  /// Remove a patient
+  void removePatient() {
+    if (currentPatients > 0) {
+      currentPatients--;
+    }
+  }
+
+  /// Set doctor availability
+  void setAvailability(bool available) {
+    isAvailable = available;
   }
 
   @override
@@ -56,6 +93,11 @@ class Doctor extends Staff {
     'licenseNumber': licenseNumber,
     'yearsOfExperience': yearsOfExperience,
     'certifications': certifications,
+    'baseSalary': baseSalary,
+    'bonus': bonus,
+    'isAvailable': isAvailable,
+    'maxPatients': maxPatients,
+    'currentPatients': currentPatients,
   };
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
@@ -70,5 +112,10 @@ class Doctor extends Staff {
     certifications: List<String>.from(json['certifications'] ?? []),
     isActive: json['isActive'] ?? true,
     assignedShifts: List<String>.from(json['assignedShifts'] ?? []),
+    baseSalary: json['baseSalary'] ?? 0.0,
+    bonus: json['bonus'] ?? 0.0,
+    isAvailable: json['isAvailable'] ?? true,
+    maxPatients: json['maxPatients'] ?? 20,
+    currentPatients: json['currentPatients'] ?? 0,
   );
 }

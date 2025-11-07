@@ -1,12 +1,9 @@
-// ============================================
-// UI LAYER - lib/ui/console_ui.dart
-// ============================================
-
 import 'dart:io';
 import '../domain/models/staff.dart';
 import '../domain/models/admin.dart';
 import '../domain/models/doctor.dart';
 import '../domain/models/nurse.dart';
+import '../domain/models/nurse_shift.dart';
 import '../domain/services/staff_service.dart';
 import '../data/staff_repository.dart';
 
@@ -19,10 +16,10 @@ class ConsoleUI {
   Future<void> start() async {
     await _loadData();
 
-    print('╔═══════════════════════════════════════════╗');
-    print('║   Hospital Staff Management System       ║');
-    print('║   Deep Dive: Staff Management Module     ║');
-    print('╚═══════════════════════════════════════════╝');
+    print('.............................................');
+    print('.  Hospital Staff Management System         .');
+    print('.   Deep Dive: Staff Management Module      .');
+    print('.............................................');
 
     while (true) {
       _showMainMenu();
@@ -63,22 +60,21 @@ class ConsoleUI {
   }
 
   void _showMainMenu() {
-    print('\n╔════════════════ MAIN MENU ═══════════════╗');
-    print('║ 1. Add New Staff                         ║');
-    print('║ 2. View All Staff                        ║');
-    print('║ 3. Search Staff                          ║');
-    print('║ 4. Update Staff Information              ║');
-    print('║ 5. Manage Staff Status (Activate/Deact) ║');
-    print('║ 6. Manage Staff Shifts                   ║');
-    print('║ 7. View Statistics & Reports             ║');
-    print('║ 8. Save Data                             ║');
-    print('║ 0. Exit                                  ║');
-    print('╚══════════════════════════════════════════╝');
+    print('\n.............. MAIN MENU ...................');
+    print('1. Add New Staff                          ');
+    print('2. View All Staff                         ');
+    print('3. Search Staff                           ');
+    print('4. Update Staff Information               ');
+    print('5. Manage Staff Status (Activate/Deact)   ');
+    print('6. Manage Staff Shifts                    ');
+    print('7. View Statistics & Reports              ');
+    print('8. Save Data                              ');
+    print('0. Exit                                   ');
     stdout.write('Enter choice: ');
   }
 
   Future<void> _addStaffMenu() async {
-    print('\n═══ Add New Staff ═══');
+    print('\n.... Add New Staff ....');
     print('1. Admin');
     print('2. Doctor');
     print('3. Nurse');
@@ -93,7 +89,7 @@ class ConsoleUI {
     String? phone = stdin.readLineSync();
 
     if (name == null || email == null || phone == null) {
-      print('❌ Invalid input!');
+      print(' Invalid input!');
       return;
     }
 
@@ -139,11 +135,13 @@ class ConsoleUI {
       case '3':
         stdout.write('Ward: ');
         String? ward = stdin.readLineSync();
-        stdout.write('Shift (Day/Night/Evening): ');
-        String? shift = stdin.readLineSync();
+        stdout.write('Shift (Morning/Afternoon/Night): ');
+        String? shiftInput = stdin.readLineSync();
         stdout.write('Nursing Level (RN/LPN/CNA): ');
         String? level = stdin.readLineSync();
-        if (ward != null && shift != null && level != null) {
+
+        if (ward != null && shiftInput != null && level != null) {
+          NurseShift nurseShift = _parseNurseShift(shiftInput);
           newStaff = Nurse(
             id: id,
             name: name,
@@ -151,7 +149,7 @@ class ConsoleUI {
             phone: phone,
             hireDate: hireDate,
             ward: ward,
-            shift: shift,
+            shift: nurseShift,
             nursingLevel: level,
           );
         }
@@ -161,13 +159,13 @@ class ConsoleUI {
     if (newStaff != null) {
       _staffService.addStaff(newStaff);
       _staffService.incrementId();
-      print('\n✅ Staff added successfully! ID: $id');
+      print('\n Staff added successfully! ID: $id');
       await _saveData();
     }
   }
 
   void _viewAllStaff() {
-    print('\n═══ All Staff Members ═══');
+    print('\n.... All Staff Members ....');
     var allStaff = _staffService.allStaff;
     if (allStaff.isEmpty) {
       print('No staff found!');
@@ -181,7 +179,7 @@ class ConsoleUI {
   }
 
   void _searchStaffMenu() {
-    print('\n═══ Search Staff ═══');
+    print('\n.... Search Staff ....');
     print('1. By ID');
     print('2. By Name');
     print('3. By Role');
@@ -210,9 +208,9 @@ class ConsoleUI {
     }
 
     if (results.isEmpty) {
-      print('\n❌ No results found!');
+      print('\n No results found!');
     } else {
-      print('\n✅ Found ${results.length} result(s):');
+      print('\n Found ${results.length} result(s):');
       for (var staff in results) {
         print('\n${'─' * 50}');
         print(staff.getStatusSummary());
@@ -226,7 +224,7 @@ class ConsoleUI {
     var staff = _staffService.findById(id ?? '');
 
     if (staff == null) {
-      print('❌ Staff not found!');
+      print(' Staff not found!');
       return;
     }
 
@@ -257,7 +255,7 @@ class ConsoleUI {
         break;
     }
 
-    print('\n✅ Updated successfully!');
+    print('\n Updated successfully!');
     await _saveData();
   }
 
@@ -267,7 +265,7 @@ class ConsoleUI {
     var staff = _staffService.findById(id ?? '');
 
     if (staff == null) {
-      print('❌ Staff not found!');
+      print(' Staff not found!');
       return;
     }
 
@@ -279,10 +277,10 @@ class ConsoleUI {
 
     if (choice == '1') {
       _staffService.activateStaff(id!);
-      print('✅ Staff activated!');
+      print(' Staff activated!');
     } else if (choice == '2') {
       _staffService.deactivateStaff(id!);
-      print('✅ Staff deactivated!');
+      print(' Staff deactivated!');
     }
 
     await _saveData();
@@ -294,7 +292,7 @@ class ConsoleUI {
     var staff = _staffService.findById(id ?? '');
 
     if (staff == null) {
-      print('❌ Staff not found!');
+      print(' Staff not found!');
       return;
     }
 
@@ -305,18 +303,18 @@ class ConsoleUI {
     String? choice = stdin.readLineSync();
 
     if (choice == '1') {
-      stdout.write('Enter shift (e.g., Monday-Morning): ');
+      stdout.write('Enter shift (ex: Monday-Morning): ');
       String? shift = stdin.readLineSync();
       if (shift != null) {
         staff.addShift(shift);
-        print('✅ Shift added!');
+        print(' Shift added!');
       }
     } else if (choice == '2') {
       stdout.write('Enter shift to remove: ');
       String? shift = stdin.readLineSync();
       if (shift != null) {
         staff.removeShift(shift);
-        print('✅ Shift removed!');
+        print(' Shift removed!');
       }
     }
 
@@ -324,7 +322,7 @@ class ConsoleUI {
   }
 
   void _viewStatistics() {
-    print('\n═══ Statistics & Reports ═══');
+    print('\n.... Statistics & Reports ....');
     var stats = _staffService.getStatistics();
 
     print('Total Staff: ${stats['total']}');
@@ -336,10 +334,10 @@ class ConsoleUI {
   }
 
   Future<void> _loadData() async {
-    print('\n📂 Loading data...');
+    print('\n Loading data...');
     var data = await _repository.loadData();
     _staffService.loadStaffList(data['staffList'], data['nextId']);
-    print('✅ Data loaded! ${data['staffList'].length} staff members found.');
+    print(' Data loaded! ${data['staffList'].length} staff members found.');
   }
 
   Future<void> _saveData() async {
@@ -348,9 +346,9 @@ class ConsoleUI {
       _staffService.nextId,
     );
     if (success) {
-      print('✅ Data saved successfully!');
+      print(' Data saved successfully!');
     } else {
-      print('❌ Failed to save data!');
+      print(' Failed to save data!');
     }
   }
 
@@ -360,6 +358,17 @@ class ConsoleUI {
     if (response?.toLowerCase() == 'y') {
       await _saveData();
     }
-    print('\n👋 Goodbye!');
+    print('\n Goodbye!');
+  }
+
+  NurseShift _parseNurseShift(String input) {
+    switch (input.toLowerCase()) {
+      case 'afternoon':
+        return NurseShift.afternoon;
+      case 'night':
+        return NurseShift.night;
+      default:
+        return NurseShift.morning;
+    }
   }
 }

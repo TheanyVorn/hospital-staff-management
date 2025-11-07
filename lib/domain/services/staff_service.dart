@@ -1,7 +1,3 @@
-// ============================================
-// DOMAIN LAYER - lib/domain/services/staff_service.dart
-// ============================================
-
 import '../models/staff.dart';
 
 class StaffService {

@@ -1,11 +1,8 @@
-// ============================================
-// DOMAIN LAYER - lib/domain/models/admin.dart
-// ============================================
-
 import 'staff.dart';
 
 class Admin extends Staff {
   String department;
+  String adminRole;
   List<String> permissions;
 
   Admin({
@@ -15,9 +12,12 @@ class Admin extends Staff {
     required String phone,
     required DateTime hireDate,
     required this.department,
+    this.adminRole = 'System Administrator',
     List<String>? permissions,
     bool isActive = true,
     List<String>? assignedShifts,
+    double baseSalary = 0.0,
+    double bonus = 0.0,
   }) : permissions = permissions ?? ['view_all', 'edit_all', 'reports'],
        super(
          id: id,
@@ -27,6 +27,8 @@ class Admin extends Staff {
          hireDate: hireDate,
          isActive: isActive,
          assignedShifts: assignedShifts,
+         baseSalary: baseSalary,
+         bonus: bonus,
        );
 
   @override
@@ -44,6 +46,21 @@ class Admin extends Staff {
     permissions.remove(permission);
   }
 
+  /// Manage staff records (view/edit employee information)
+  String manageStaffRecords(String employeeId) {
+    return 'Accessing records for employee: $employeeId';
+  }
+
+  /// Process leave request from an employee
+  void processLeaveRequest(int leaveId, bool approved) {
+    // In a real system, this would update the leave record in a database
+    if (approved) {
+      // Log or update leave status to approved
+    } else {
+      // Log or update leave status to cancelled
+    }
+  }
+
   @override
   Map<String, dynamic> toJson() => {
     'type': 'Admin',
@@ -55,7 +72,10 @@ class Admin extends Staff {
     'isActive': isActive,
     'assignedShifts': assignedShifts,
     'department': department,
+    'adminRole': adminRole,
     'permissions': permissions,
+    'baseSalary': baseSalary,
+    'bonus': bonus,
   };
 
   factory Admin.fromJson(Map<String, dynamic> json) => Admin(
@@ -65,8 +85,11 @@ class Admin extends Staff {
     phone: json['phone'],
     hireDate: DateTime.parse(json['hireDate']),
     department: json['department'],
+    adminRole: json['adminRole'] ?? 'System Administrator',
     permissions: List<String>.from(json['permissions'] ?? []),
     isActive: json['isActive'] ?? true,
     assignedShifts: List<String>.from(json['assignedShifts'] ?? []),
+    baseSalary: json['baseSalary'] ?? 0.0,
+    bonus: json['bonus'] ?? 0.0,
   );
 }

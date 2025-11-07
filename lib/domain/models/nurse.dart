@@ -1,13 +1,11 @@
-// ============================================
-// DOMAIN LAYER - lib/domain/models/nurse.dart
-// ============================================
-
 import 'staff.dart';
+import 'nurse_shift.dart';
 
 class Nurse extends Staff {
   String ward;
-  String shift;
+  NurseShift shift;
   String nursingLevel;
+  List<String> patientsUnderCare;
 
   Nurse({
     required String id,
@@ -20,7 +18,11 @@ class Nurse extends Staff {
     required this.nursingLevel,
     bool isActive = true,
     List<String>? assignedShifts,
-  }) : super(
+    double baseSalary = 0.0,
+    double bonus = 0.0,
+    List<String>? patientsUnderCare,
+  }) : patientsUnderCare = patientsUnderCare ?? [],
+       super(
          id: id,
          name: name,
          email: email,
@@ -28,6 +30,8 @@ class Nurse extends Staff {
          hireDate: hireDate,
          isActive: isActive,
          assignedShifts: assignedShifts,
+         baseSalary: baseSalary,
+         bonus: bonus,
        );
 
   @override
@@ -37,8 +41,30 @@ class Nurse extends Staff {
     ward = newWard;
   }
 
-  void changeShift(String newShift) {
+  void changeShift(NurseShift newShift) {
     shift = newShift;
+  }
+
+  /// Update patient care status
+  void updatePatientCare(String patientId) {
+    if (!patientsUnderCare.contains(patientId)) {
+      patientsUnderCare.add(patientId);
+    }
+  }
+
+  /// Remove patient from care
+  void removePatientCare(String patientId) {
+    patientsUnderCare.remove(patientId);
+  }
+
+  /// Get list of patients under care
+  List<String> getPatientsUnderCare() {
+    return List.unmodifiable(patientsUnderCare);
+  }
+
+  /// Get number of patients under care
+  int getPatientCount() {
+    return patientsUnderCare.length;
   }
 
   @override
@@ -52,8 +78,11 @@ class Nurse extends Staff {
     'isActive': isActive,
     'assignedShifts': assignedShifts,
     'ward': ward,
-    'shift': shift,
+    'shift': shift.toString(),
     'nursingLevel': nursingLevel,
+    'baseSalary': baseSalary,
+    'bonus': bonus,
+    'patientsUnderCare': patientsUnderCare,
   };
 
   factory Nurse.fromJson(Map<String, dynamic> json) => Nurse(
@@ -63,9 +92,23 @@ class Nurse extends Staff {
     phone: json['phone'],
     hireDate: DateTime.parse(json['hireDate']),
     ward: json['ward'],
-    shift: json['shift'],
+    shift: _parseNurseShift(json['shift']),
     nursingLevel: json['nursingLevel'],
     isActive: json['isActive'] ?? true,
     assignedShifts: List<String>.from(json['assignedShifts'] ?? []),
+    baseSalary: json['baseSalary'] ?? 0.0,
+    bonus: json['bonus'] ?? 0.0,
+    patientsUnderCare: List<String>.from(json['patientsUnderCare'] ?? []),
   );
+
+  static NurseShift _parseNurseShift(String? shift) {
+    switch (shift) {
+      case 'Afternoon':
+        return NurseShift.afternoon;
+      case 'Night':
+        return NurseShift.night;
+      default:
+        return NurseShift.morning;
+    }
+  }
 }
