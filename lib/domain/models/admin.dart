@@ -39,7 +39,6 @@ Permissions: ${permissions.join(", ")}
 Base Salary: $baseSalary
 Bonus: $bonus
 Total Salary: ${calculateTotalSalary()}
-Assigned Shifts: ${assignedShifts.isEmpty ? "None" : assignedShifts.join(", ")}
 Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}''';
   }
 
@@ -55,19 +54,13 @@ Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}'
     permissions.remove(permission);
   }
 
-  /// Manage staff records (view/edit employee information)
   String manageStaffRecords(String employeeId) {
     return 'Accessing records for employee: $employeeId';
   }
 
-  /// Process leave request from an employee
   void processLeaveRequest(int leaveId, bool approved) {
-    // In a real system, this would update the leave record in a database
     if (approved) {
-      // Log or update leave status to approved
-    } else {
-      // Log or update leave status to cancelled
-    }
+    } else {}
   }
 
   @override

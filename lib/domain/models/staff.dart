@@ -41,7 +41,6 @@ abstract class Staff {
     assignedShifts.remove(shift);
   }
 
-  /// Apply for leave
   Leave applyLeave(DateTime startDate, DateTime endDate) {
     Leave leave = Leave(
       leaveId: nextLeaveId,
@@ -54,24 +53,20 @@ abstract class Staff {
     return leave;
   }
 
-  /// Get all leaves for this staff member
   List<Leave> getLeaves() {
     return List.unmodifiable(leaves);
   }
 
-  /// Calculate total salary (base + bonus)
   double calculateTotalSalary() {
     return baseSalary + bonus;
   }
 
-  /// Update base salary
   void updateSalary(double newAmount) {
     if (newAmount >= 0) {
       baseSalary = newAmount;
     }
   }
 
-  /// Update bonus
   void updateBonus(double newBonus) {
     if (newBonus >= 0) {
       bonus = newBonus;

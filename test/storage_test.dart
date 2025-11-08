@@ -1,3 +1,5 @@
+//AI-GENERATED
+
 import 'package:test/test.dart';
 import 'package:managing_staff_g2t3/data/staff_repository.dart';
 import 'package:managing_staff_g2t3/domain/models/admin.dart';

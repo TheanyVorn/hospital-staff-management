@@ -71,7 +71,7 @@ class StaffService {
   bool deleteStaff(String id) {
     final initialLength = _staffList.length;
     _staffList.removeWhere((s) => s.id == id);
-    return _staffList.length < initialLength; // True if item(s) were removed
+    return _staffList.length < initialLength;
   }
 
   String generateId() {

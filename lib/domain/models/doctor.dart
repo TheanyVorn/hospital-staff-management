@@ -58,7 +58,6 @@ Years of Experience: $yearsOfExperience
 Base Salary: $baseSalary
 Bonus: $bonus
 Total Salary: ${calculateTotalSalary()}
-Assigned Shifts: ${assignedShifts.isEmpty ? "None" : assignedShifts.join(", ")}
 Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}
 Available: ${isAvailable ? "Yes" : "No"}
 Current Patients: $currentPatients / $maxPatients''';
@@ -70,17 +69,14 @@ Current Patients: $currentPatients / $maxPatients''';
     }
   }
 
-  /// Check if doctor is available for appointments
   bool isAvailableForAppointments() {
     return isAvailable && isActive;
   }
 
-  /// Check if doctor can accept new patients
   bool canAcceptNewPatient() {
     return isAvailableForAppointments() && currentPatients < maxPatients;
   }
 
-  /// Add a new patient
   bool addPatient() {
     if (canAcceptNewPatient()) {
       currentPatients++;
@@ -89,14 +85,12 @@ Current Patients: $currentPatients / $maxPatients''';
     return false;
   }
 
-  /// Remove a patient
   void removePatient() {
     if (currentPatients > 0) {
       currentPatients--;
     }
   }
 
-  /// Set doctor availability
   void setAvailability(bool available) {
     isAvailable = available;
   }

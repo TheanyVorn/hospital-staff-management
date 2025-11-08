@@ -14,12 +14,12 @@ class StaffRepository {
     try {
       final file = File(_filePath);
       if (!await file.exists()) {
-        return {'staffList': <Staff>[], 'nextId': 1}; // Explicit <Staff>[] type
+        return {'staffList': <Staff>[], 'nextId': 1};
       }
 
       final contents = await file.readAsString();
       if (contents.isEmpty) {
-        return {'staffList': <Staff>[], 'nextId': 1}; // Explicit <Staff>[] type
+        return {'staffList': <Staff>[], 'nextId': 1};
       }
 
       final data = jsonDecode(contents);
@@ -42,7 +42,7 @@ class StaffRepository {
       return {'staffList': staffList, 'nextId': data['nextId'] ?? 1};
     } catch (e) {
       print('Error loading data: $e');
-      return {'staffList': <Staff>[], 'nextId': 1}; // Explicit <Staff>[] type
+      return {'staffList': <Staff>[], 'nextId': 1};
     }
   }
 

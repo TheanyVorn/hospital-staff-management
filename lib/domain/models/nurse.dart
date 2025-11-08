@@ -65,24 +65,20 @@ Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}'
     shift = newShift;
   }
 
-  /// Update patient care status
   void updatePatientCare(String patientId) {
     if (!patientsUnderCare.contains(patientId)) {
       patientsUnderCare.add(patientId);
     }
   }
 
-  /// Remove patient from care
   void removePatientCare(String patientId) {
     patientsUnderCare.remove(patientId);
   }
 
-  /// Get list of patients under care
   List<String> getPatientsUnderCare() {
     return List.unmodifiable(patientsUnderCare);
   }
 
-  /// Get number of patients under care
   int getPatientCount() {
     return patientsUnderCare.length;
   }

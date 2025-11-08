@@ -75,7 +75,7 @@ class ConsoleUI {
     print('2. View All Staff                         ');
     print('3. Search Staff                           ');
     print('4. Update Staff Information               ');
-    print('5. Manage Staff Status (Activate/Deact)   ');
+    print('5. Manage Staff Status (Activate/Deactivate)');
     print('6. Manage Staff Shifts                    ');
     print('7. Leave Request                          ');
     print('8. Manage Salary                          ');
@@ -188,7 +188,7 @@ class ConsoleUI {
         }
         break;
       case '3':
-        stdout.write('Ward: ');
+        stdout.write('Ward(ICU, Emergency, Genral): ');
         String? ward = stdin.readLineSync();
         stdout.write('Shift (Morning/Afternoon/Night): ');
         String? shiftInput = stdin.readLineSync();
@@ -317,6 +317,17 @@ class ConsoleUI {
     print('\nCurrent Info:');
     print(staff.getStatusSummary());
 
+    // Check if staff is a doctor
+    if (staff.role == 'Doctor') {
+      await _updateDoctorMenu(staff);
+    } else {
+      await _updateGeneralStaffMenu(staff);
+    }
+
+    await _saveData();
+  }
+
+  Future<void> _updateGeneralStaffMenu(Staff staff) async {
     print('\n1. Update Name');
     print('2. Update Email');
     print('3. Update Phone');
@@ -342,7 +353,109 @@ class ConsoleUI {
     }
 
     print('\n Updated successfully!');
-    await _saveData();
+  }
+
+  Future<void> _updateDoctorMenu(Staff staff) async {
+    // Cast to Doctor to access doctor-specific properties
+    final doctor = staff as Doctor;
+
+    print('\n1. Update Name');
+    print('2. Update Email');
+    print('3. Update Phone');
+    print('4. Update Availability Status');
+    print('5. Update Maximum Patient Capacity');
+    print('6. Add Patient');
+    print('7. Remove Patient');
+    stdout.write('Choose: ');
+    String? choice = stdin.readLineSync();
+
+    switch (choice) {
+      case '1':
+        stdout.write('New name: ');
+        String? name = stdin.readLineSync();
+        if (name != null) staff.name = name;
+        break;
+      case '2':
+        stdout.write('New email: ');
+        String? email = stdin.readLineSync();
+        if (email != null) staff.email = email;
+        break;
+      case '3':
+        stdout.write('New phone: ');
+        String? phone = stdin.readLineSync();
+        if (phone != null) staff.phone = phone;
+        break;
+      case '4':
+        print(
+          '\nCurrent Availability: ${doctor.isAvailable ? "Available" : "Not Available"}',
+        );
+        print('1. Set Available');
+        print('2. Set Not Available');
+        stdout.write('Choose: ');
+        String? avChoice = stdin.readLineSync();
+        if (avChoice == '1') {
+          doctor.setAvailability(true);
+          print(' Doctor set as Available!');
+        } else if (avChoice == '2') {
+          doctor.setAvailability(false);
+          print(' Doctor set as Not Available!');
+        }
+        break;
+      case '5':
+        print('\nCurrent Maximum Capacity: ${doctor.maxPatients}');
+        print('Current Patient Count: ${doctor.currentPatients}');
+        stdout.write('New maximum capacity: ');
+        String? capacity = stdin.readLineSync();
+        if (capacity != null) {
+          int? newCapacity = int.tryParse(capacity);
+          if (newCapacity != null && newCapacity > 0) {
+            doctor.maxPatients = newCapacity;
+            print(' Maximum capacity updated successfully!');
+          } else {
+            print(' Error: Please enter a valid positive number!');
+          }
+        }
+        break;
+      case '6':
+        print(
+          '\nCurrent Patients: ${doctor.currentPatients} / ${doctor.maxPatients}',
+        );
+        if (doctor.canAcceptNewPatient()) {
+          if (doctor.addPatient()) {
+            print(' Patient added successfully!');
+            print(
+              'Updated Patient Count: ${doctor.currentPatients} / ${doctor.maxPatients}',
+            );
+          }
+        } else {
+          print(' Error: Doctor cannot accept new patients!');
+          if (!doctor.isAvailable) {
+            print('  - Doctor is not available');
+          }
+          if (doctor.currentPatients >= doctor.maxPatients) {
+            print(
+              '  - Doctor has reached maximum capacity (${doctor.maxPatients})',
+            );
+          }
+        }
+        break;
+      case '7':
+        print(
+          '\nCurrent Patients: ${doctor.currentPatients} / ${doctor.maxPatients}',
+        );
+        if (doctor.currentPatients > 0) {
+          doctor.removePatient();
+          print(' Patient removed successfully!');
+          print(
+            'Updated Patient Count: ${doctor.currentPatients} / ${doctor.maxPatients}',
+          );
+        } else {
+          print(' Error: No patients to remove!');
+        }
+        break;
+    }
+
+    print('\n Updated successfully!');
   }
 
   Future<void> _manageStaffStatusMenu() async {
@@ -447,7 +560,7 @@ class ConsoleUI {
       for (var staff in allStaff) {
         var leaves = staff.getLeaves();
         var pendingLeaves = leaves
-            .where((l) => l.status.displayName == 'pending')
+            .where((l) => l.status.displayName == 'Pending')
             .toList();
 
         if (pendingLeaves.isNotEmpty) {
