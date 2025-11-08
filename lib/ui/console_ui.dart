@@ -1,3 +1,5 @@
+//AI-GENERATED
+
 import 'dart:io';
 import '../domain/models/staff.dart';
 import '../domain/models/admin.dart';
@@ -12,6 +14,8 @@ class ConsoleUI {
   final StaffRepository _repository;
 
   ConsoleUI(this._staffService, this._repository);
+
+  get license => null;
 
   Future<void> start() async {
     await _loadData();
@@ -45,7 +49,7 @@ class ConsoleUI {
           await _manageShiftsMenu();
           break;
         case '7':
-          _viewStatistics();
+          _viewOverallStaff();
           break;
         case '8':
           await _saveData();
@@ -67,7 +71,7 @@ class ConsoleUI {
     print('4. Update Staff Information               ');
     print('5. Manage Staff Status (Activate/Deact)   ');
     print('6. Manage Staff Shifts                    ');
-    print('7. View Statistics & Reports              ');
+    print('7. View overall staff                     ');
     print('8. Save Data                              ');
     print('0. Exit                                   ');
     stdout.write('Enter choice: ');
@@ -116,10 +120,17 @@ class ConsoleUI {
         stdout.write('Specialization: ');
         String? spec = stdin.readLineSync();
         stdout.write('License Number: ');
-        String? license = stdin.readLineSync();
+        String? licenseNum = stdin.readLineSync();
         stdout.write('Years of Experience: ');
-        int? years = int.tryParse(stdin.readLineSync() ?? '0');
-        if (spec != null && license != null && years != null) {
+        String? yearsStr = stdin.readLineSync();
+        int? years = int.tryParse(yearsStr ?? '0');
+
+        if (spec != null &&
+            spec.isNotEmpty &&
+            licenseNum != null &&
+            licenseNum.isNotEmpty &&
+            years != null &&
+            years > 0) {
           newStaff = Doctor(
             id: id,
             name: name,
@@ -127,8 +138,12 @@ class ConsoleUI {
             phone: phone,
             hireDate: hireDate,
             specialization: spec,
-            licenseNumber: license,
+            licenseNumber: licenseNum,
             yearsOfExperience: years,
+          );
+        } else {
+          print(
+            '\n✗ Invalid Doctor input. Please ensure all fields are filled correctly.\n',
           );
         }
         break;
@@ -159,8 +174,10 @@ class ConsoleUI {
     if (newStaff != null) {
       _staffService.addStaff(newStaff);
       _staffService.incrementId();
-      print('\n Staff added successfully! ID: $id');
+      print('\n✓ Staff added successfully! ID: $id\n');
       await _saveData();
+    } else {
+      print('\n✗ Failed to add staff. Invalid input provided.\n');
     }
   }
 
@@ -321,8 +338,8 @@ class ConsoleUI {
     await _saveData();
   }
 
-  void _viewStatistics() {
-    print('\n.... Statistics & Reports ....');
+  void _viewOverallStaff() {
+    print('\n.... Overall Staff Summary ....');
     var stats = _staffService.getStatistics();
 
     print('Total Staff: ${stats['total']}');
@@ -346,9 +363,9 @@ class ConsoleUI {
       _staffService.nextId,
     );
     if (success) {
-      print(' Data saved successfully!');
+      print('Data saved successfully!');
     } else {
-      print(' Failed to save data!');
+      print('Failed to save data!');
     }
   }
 

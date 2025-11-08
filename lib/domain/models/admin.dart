@@ -6,30 +6,19 @@ class Admin extends Staff {
   List<String> permissions;
 
   Admin({
-    required String id,
-    required String name,
-    required String email,
-    required String phone,
-    required DateTime hireDate,
+    required super.id,
+    required super.name,
+    required super.email,
+    required super.phone,
+    required super.hireDate,
     required this.department,
     this.adminRole = 'System Administrator',
     List<String>? permissions,
-    bool isActive = true,
-    List<String>? assignedShifts,
-    double baseSalary = 0.0,
-    double bonus = 0.0,
-  }) : permissions = permissions ?? ['view_all', 'edit_all', 'reports'],
-       super(
-         id: id,
-         name: name,
-         email: email,
-         phone: phone,
-         hireDate: hireDate,
-         isActive: isActive,
-         assignedShifts: assignedShifts,
-         baseSalary: baseSalary,
-         bonus: bonus,
-       );
+    super.isActive,
+    super.assignedShifts,
+    super.baseSalary,
+    super.bonus,
+  }) : permissions = permissions ?? ['view_all', 'edit_all', 'reports'];
 
   @override
   String get role => 'Admin';
