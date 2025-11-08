@@ -23,6 +23,26 @@ class Admin extends Staff {
   @override
   String get role => 'Admin';
 
+  @override
+  String getStatusSummary() {
+    return '''
+ID: $id
+Name: $name
+Role: $role
+Email: $email
+Phone: $phone
+Hire Date: ${hireDate.toLocal().toString().split(' ')[0]}
+Status: ${isActive ? "Active" : "Inactive"}
+Department: $department
+Admin Role: $adminRole
+Permissions: ${permissions.join(", ")}
+Base Salary: $baseSalary
+Bonus: $bonus
+Total Salary: ${calculateTotalSalary()}
+Assigned Shifts: ${assignedShifts.isEmpty ? "None" : assignedShifts.join(", ")}
+Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}''';
+  }
+
   bool hasPermission(String permission) => permissions.contains(permission);
 
   void grantPermission(String permission) {

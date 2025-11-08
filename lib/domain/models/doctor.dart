@@ -42,6 +42,28 @@ class Doctor extends Staff {
   @override
   String get role => 'Doctor';
 
+  @override
+  String getStatusSummary() {
+    return '''
+ID: $id
+Name: $name
+Role: $role
+Email: $email
+Phone: $phone
+Hire Date: ${hireDate.toLocal().toString().split(' ')[0]}
+Status: ${isActive ? "Active" : "Inactive"}
+Specialization: $specialization
+License Number: $licenseNumber
+Years of Experience: $yearsOfExperience
+Base Salary: $baseSalary
+Bonus: $bonus
+Total Salary: ${calculateTotalSalary()}
+Assigned Shifts: ${assignedShifts.isEmpty ? "None" : assignedShifts.join(", ")}
+Active Leaves: ${leaves.where((l) => l.status.toString() == 'On Leave').length}
+Available: ${isAvailable ? "Yes" : "No"}
+Current Patients: $currentPatients / $maxPatients''';
+  }
+
   void addCertification(String cert) {
     if (!certifications.contains(cert)) {
       certifications.add(cert);
