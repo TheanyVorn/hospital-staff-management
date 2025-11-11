@@ -176,14 +176,18 @@ class ConsoleUI {
           );
         } else {
           print('\n✗ Invalid Doctor input:');
-          if (spec == null || spec.isEmpty)
+          if (spec == null || spec.isEmpty) {
             print('  - Specialization is required');
-          if (licenseNum == null || licenseNum.isEmpty)
+          }
+          if (licenseNum == null || licenseNum.isEmpty) {
             print('  - License Number is required');
-          if (years == null || years <= 0)
+          }
+          if (years == null || years <= 0) {
             print('  - Years of Experience must be a positive number');
-          if (docBaseSalary == null)
+          }
+          if (docBaseSalary == null) {
             print('  - Base Salary must be a valid number');
+          }
           print('');
         }
         break;
@@ -247,7 +251,7 @@ class ConsoleUI {
     // Display statistics
     print('\n${'─' * 50}');
     print('📊 STAFF STATISTICS');
-    print('${'─' * 50}');
+    print('─' * 50);
     print('Total Staff: $totalStaff');
     print('  Active: $activeStaff');
     print('  Inactive: $inactiveStaff');
@@ -552,7 +556,7 @@ class ConsoleUI {
     if (choice == '1') {
       // Show all pending leave requests
       print('\n📋 Pending Leave Requests:');
-      print('${'─' * 70}');
+      print('─' * 70);
 
       var allStaff = _staffService.allStaff;
       bool hasPending = false;
@@ -710,13 +714,13 @@ class ConsoleUI {
 
   Future<void> _saveData() async {
     var success = await _repository.saveData(
-      _staffService.allStaff,
-      _staffService.nextId,
+      staffList: _staffService.allStaff,
+      nextId: _staffService.nextId,
     );
     if (success) {
-      print('Data saved successfully!');
+      print('✓ Data saved successfully!');
     } else {
-      print('Failed to save data!');
+      print('✗ Error saving data.');
     }
   }
 

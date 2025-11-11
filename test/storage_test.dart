@@ -205,7 +205,7 @@ void main() {
 
     group('Save Data', () {
       test('Should save empty staff list', () async {
-        bool success = await repository.saveData([], 1);
+        bool success = await repository.saveData(staffList: [], nextId: 1);
         expect(success, isTrue);
 
         final file = File(testFilePath);
@@ -222,7 +222,7 @@ void main() {
           department: 'HR',
         );
 
-        bool success = await repository.saveData([admin], 2);
+        bool success = await repository.saveData(staffList: [admin], nextId: 2);
         expect(success, isTrue);
 
         var loaded = await repository.loadData();
@@ -260,7 +260,10 @@ void main() {
           nursingLevel: 'LPN',
         );
 
-        bool success = await repository.saveData([admin, doctor, nurse], 4);
+        bool success = await repository.saveData(
+          staffList: [admin, doctor, nurse],
+          nextId: 4,
+        );
         expect(success, isTrue);
 
         var loaded = await repository.loadData();
@@ -278,7 +281,7 @@ void main() {
           hireDate: DateTime.now(),
           department: 'IT',
         );
-        await repository.saveData([admin1], 2);
+        await repository.saveData(staffList: [admin1], nextId: 2);
 
         // Save different data
         Doctor doctor = Doctor(
@@ -291,7 +294,7 @@ void main() {
           licenseNumber: 'MD-002',
           yearsOfExperience: 3,
         );
-        await repository.saveData([doctor], 3);
+        await repository.saveData(staffList: [doctor], nextId: 3);
 
         var loaded = await repository.loadData();
         expect(loaded['staffList'].length, equals(1));
@@ -301,7 +304,7 @@ void main() {
       test('Should handle save errors gracefully', () async {
         // Use an invalid path to trigger an error
         StaffRepository badRepo = StaffRepository('/invalid/path/file.json');
-        bool success = await badRepo.saveData([], 1);
+        bool success = await badRepo.saveData(staffList: [], nextId: 1);
         expect(success, isFalse);
       });
     });
@@ -322,7 +325,7 @@ void main() {
           hireDate: DateTime.now(),
           department: 'IT',
         );
-        await repository.saveData([admin], 2);
+        await repository.saveData(staffList: [admin], nextId: 2);
 
         // Now backup
         bool success = await repository.backupData();
@@ -350,7 +353,7 @@ void main() {
           hireDate: DateTime(2020, 1, 15),
           department: 'Finance',
         );
-        await repository.saveData([admin], 2);
+        await repository.saveData(staffList: [admin], nextId: 2);
 
         await repository.backupData();
 
@@ -385,7 +388,7 @@ void main() {
           assignedShifts: ['Monday-Day', 'Wednesday-Evening'],
         );
 
-        await repository.saveData([admin], 2);
+        await repository.saveData(staffList: [admin], nextId: 2);
         var loaded = await repository.loadData();
         Admin loadedAdmin = loaded['staffList'][0];
 
@@ -411,7 +414,7 @@ void main() {
           isActive: true,
         );
 
-        await repository.saveData([doctor], 3);
+        await repository.saveData(staffList: [doctor], nextId: 3);
         var loaded = await repository.loadData();
         Doctor loadedDoctor = loaded['staffList'][0];
 
@@ -435,7 +438,7 @@ void main() {
           assignedShifts: ['Tuesday-Night', 'Thursday-Night'],
         );
 
-        await repository.saveData([nurse], 4);
+        await repository.saveData(staffList: [nurse], nextId: 4);
         var loaded = await repository.loadData();
         Nurse loadedNurse = loaded['staffList'][0];
 
