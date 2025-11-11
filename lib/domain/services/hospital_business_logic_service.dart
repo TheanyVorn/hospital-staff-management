@@ -3,7 +3,6 @@ import 'package:managing_staff_g2t3/domain/models/shift_schedule.dart';
 import 'package:managing_staff_g2t3/domain/models/leave_request.dart';
 import 'package:managing_staff_g2t3/domain/models/performance_metrics.dart';
 
-/// Complex business logic service for managing hospital operations
 class HospitalBusinessLogicService {
   final List<Department> departments;
   final List<ShiftSchedule> shiftSchedules;
@@ -20,9 +19,6 @@ class HospitalBusinessLogicService {
        leaveRequests = leaveRequests ?? [],
        performanceMetrics = performanceMetrics ?? [];
 
-  // ==================== DEPARTMENT LOGIC ====================
-
-  /// Add a new department
   bool addDepartment(Department department) {
     final errors = department.validate();
     if (errors.isNotEmpty) {
@@ -36,7 +32,6 @@ class HospitalBusinessLogicService {
     return false;
   }
 
-  /// Get department by ID
   Department? getDepartmentById(String id) {
     try {
       return departments.firstWhere((d) => d.id == id);
@@ -45,12 +40,10 @@ class HospitalBusinessLogicService {
     }
   }
 
-  /// Get all available departments (with capacity)
   List<Department> getAvailableDepartments() {
     return departments.where((d) => d.hasCapacity() && d.isActive).toList();
   }
 
-  /// Get department occupancy report
   Map<String, dynamic> getDepartmentOccupancyReport() {
     return {
       'totalDepartments': departments.length,
@@ -75,9 +68,6 @@ class HospitalBusinessLogicService {
     };
   }
 
-  // ==================== SHIFT SCHEDULING LOGIC ====================
-
-  /// Add a new shift schedule
   bool addShiftSchedule(ShiftSchedule schedule) {
     final errors = schedule.validate();
     if (errors.isNotEmpty) {
@@ -91,7 +81,6 @@ class HospitalBusinessLogicService {
     return false;
   }
 
-  /// Get shift schedule by ID
   ShiftSchedule? getShiftScheduleById(String id) {
     try {
       return shiftSchedules.firstWhere((s) => s.id == id);
@@ -100,12 +89,10 @@ class HospitalBusinessLogicService {
     }
   }
 
-  /// Get understaffed shifts
   List<ShiftSchedule> getUnderstaffedShifts() {
     return shiftSchedules.where((s) => !s.isFullyStaffed()).toList();
   }
 
-  /// Get shifts for a specific date
   List<ShiftSchedule> getShiftsForDate(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     return shiftSchedules
@@ -115,14 +102,12 @@ class HospitalBusinessLogicService {
         .toList();
   }
 
-  /// Get shifts for a specific staff member
   List<ShiftSchedule> getShiftsForStaff(String staffId) {
     return shiftSchedules
         .where((s) => s.assignedStaff.contains(staffId))
         .toList();
   }
 
-  /// Get weekly schedule report
   Map<String, dynamic> getWeeklyScheduleReport(DateTime startDate) {
     final weekShifts = <String, List<ShiftSchedule>>{};
     for (int i = 0; i < 7; i++) {
@@ -148,9 +133,6 @@ class HospitalBusinessLogicService {
     };
   }
 
-  // ==================== LEAVE REQUEST LOGIC ====================
-
-  /// Submit a leave request
   bool submitLeaveRequest(LeaveRequest leaveRequest) {
     final errors = leaveRequest.validate();
     if (errors.isNotEmpty) {
@@ -164,7 +146,6 @@ class HospitalBusinessLogicService {
     return false;
   }
 
-  /// Approve leave request with validation
   bool approveLeaveRequest(
     String leaveId,
     String approverId,
@@ -173,7 +154,6 @@ class HospitalBusinessLogicService {
     try {
       final leaveRequest = leaveRequests.firstWhere((l) => l.id == leaveId);
 
-      // Check if replacement staff is necessary
       if (replacementStaffId == null &&
           !_canCoverWithoutReplacement(leaveRequest.staffId)) {
         print('Error: Replacement staff required for this leave period');
@@ -186,7 +166,6 @@ class HospitalBusinessLogicService {
     }
   }
 
-  /// Reject leave request with reason
   bool rejectLeaveRequest(String leaveId, String approverId, String reason) {
     try {
       final leaveRequest = leaveRequests.firstWhere((l) => l.id == leaveId);
@@ -196,19 +175,16 @@ class HospitalBusinessLogicService {
     }
   }
 
-  /// Get pending leave requests
   List<LeaveRequest> getPendingLeaveRequests() {
     return leaveRequests
         .where((l) => l.status == LeaveRequestStatus.pending)
         .toList();
   }
 
-  /// Get leave requests for a staff member
   List<LeaveRequest> getLeaveRequestsForStaff(String staffId) {
     return leaveRequests.where((l) => l.staffId == staffId).toList();
   }
 
-  /// Get overlapping leave requests
   List<LeaveRequest> getOverlappingLeaveRequests(
     DateTime startDate,
     DateTime endDate,
@@ -221,14 +197,9 @@ class HospitalBusinessLogicService {
   }
 
   bool _canCoverWithoutReplacement(String staffId) {
-    // Check if there are enough staff members to cover shifts
-    // This is a simplified check
     return false;
   }
 
-  // ==================== PERFORMANCE METRICS LOGIC ====================
-
-  /// Add or update performance metrics
   bool updatePerformanceMetrics(PerformanceMetrics metrics) {
     final errors = metrics.validate();
     if (errors.isNotEmpty) {
@@ -246,7 +217,6 @@ class HospitalBusinessLogicService {
     return true;
   }
 
-  /// Get performance metrics for a staff member
   PerformanceMetrics? getPerformanceMetricsForStaff(
     String staffId,
     String period,
@@ -260,14 +230,12 @@ class HospitalBusinessLogicService {
     }
   }
 
-  /// Get staff with concerning performance
   List<PerformanceMetrics> getStaffWithConcerningPerformance() {
     return performanceMetrics
         .where((m) => m.isPerformanceConcerning())
         .toList();
   }
 
-  /// Get performance report for a period
   Map<String, dynamic> getPerformanceReportForPeriod(String period) {
     final metricsForPeriod = performanceMetrics
         .where((m) => m.period == period)
@@ -314,9 +282,6 @@ class HospitalBusinessLogicService {
     };
   }
 
-  // ==================== COMPLEX ANALYTICS ====================
-
-  /// Get staff availability for a given date and shift
   List<String> getAvailableStaffForShift(
     DateTime date,
     String shift,
@@ -331,15 +296,11 @@ class HospitalBusinessLogicService {
       assignedStaff.addAll(schedule.assignedStaff);
     }
 
-    // Get approved leave for this date (staff on leave cannot be assigned)
     getOverlappingLeaveRequests(date, date);
 
-    // Filter based on role would require full staff list reference
-    // This is a simplified version - returns empty list as placeholder
     return [];
   }
 
-  /// Get compliance report
   Map<String, dynamic> getComplianceReport() {
     return {
       'totalDepartments': departments.length,
@@ -357,7 +318,6 @@ class HospitalBusinessLogicService {
     };
   }
 
-  /// Get comprehensive hospital operational summary
   Map<String, dynamic> getHospitalOperationalSummary() {
     return {
       'timestamp': DateTime.now().toIso8601String(),
